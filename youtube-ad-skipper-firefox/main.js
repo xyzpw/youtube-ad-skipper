@@ -2,7 +2,8 @@ adElements = [".ytd-companion-slot-renderer",
 ".ytd-action-companion-ad-renderer",
 ".ytd-watch-next-secondary-results-renderer.sparkles-light-cta",
 ".ytd-unlimited-offer-module-renderer",
-".ytp-ad-overlay-image", ".ytp-ad-text-overlay",
+".ytp-ad-overlay-image",
+".ytp-ad-text-overlay",
 "div#root.style-scope.ytd-display-ad-renderer.yt-simple-endpoint",
 "div#sparkles-container.style-scope.ytd-promoted-sparkles-web-renderer",
 ".ytd-display-ad-renderer",
@@ -13,50 +14,96 @@ adElements = [".ytd-companion-slot-renderer",
 ".ytd-banner-promo-renderer",
 ".ytd-video-masthead-ad-v3-renderer",
 ".ytd-primetime-promo-renderer",
-".ytd-in-feed-ad-layout-renderer",
-".ytd-ad-slot-renderer"
+".ytd-ad-slot-renderer",
+];
+
+unwantedElements = [
+    ".ytd-promoted-video-renderer",
+    ".ytd-brand-video-singleton-renderer",
+    ".ytd-statement-banner-renderer",
+    ".ytd-popup-container",
+    ".ytd-rich-section-renderer",
+    ".ytd-promoted-sparkles-web-renderer",
 ];
 
 function removeAdElements(){
-    adElements.forEach((ad)=>{
-        document.querySelector(ad) ? document.querySelector(ad).hidden = true : null;
+    let n = 0;
+    adElements.forEach((ad) => {
+        let currentAd = document.querySelector(ad);
+        if (document.querySelectorAll(ad).length > 1) {
+            try{
+                document.querySelectorAll(ad).forEach((adSlot) => {
+                    if (!adSlot.hidden){
+                        adSlot.hidden = true;
+                        ++n;
+                    }
+                });
+            } catch (_ex) {
+                console.log(_ex, _ex.lineNumber);
+            }
+        } else if (currentAd) {
+            if (!currentAd.hidden){
+                currentAd.hidden = true;
+                ++n;
+            }
+        }
     });
+    unwantedElements.forEach((ad) => {
+        let currentAd = document.querySelector(ad);
+        if (document.querySelectorAll(ad).length > 1){
+            document.querySelectorAll(ad).forEach((adSlot) => {
+                try{
+                    document.querySelectorAll(ad).forEach((adSlot) => {
+                        if (!adSlot.hidden){
+                            adSlot.hidden = true;
+                            ++n;
+                        }
+                    })
+                } catch (_ex) {
+                    console.log(_ex, _ex.lineNumber);
+                }
+            })
+        } else if (currentAd){
+            if (!currentAd.hidden){
+                currentAd.hidden = true;
+                ++n
+            }
+        }
+    })
+    let logMessage = `Startup: %cRemoved ${n} ads`;
+    n >= 1 ? console.log(logMessage, "color: #28a745") : console.log(logMessage, "color: #ffc107");
 }
 
-// wait for 2 seconds before attempting to remove ads
-if (document.readyState === "complete"){
-    setTimeout(()=>{
-        removeAdElements();
-    }, 2000);
-} else {
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(()=>{
-            removeAdElements();
-        }, 2000);
-    });
-}
+removeAdElements();
 
 function main(){
     let adInterval = setInterval(()=>{
         let videoStream = document.getElementsByClassName("video-stream");
         let moviePlayer = document.getElementById("movie_player");
-        let isAd = moviePlayer.classList?.contains("ad-showing") || moviePlayer.classList?.contains("ad-interrupting");
+        let isAd = moviePlayer?.classList?.contains("ad-showing") || moviePlayer?.classList?.contains("ad-interrupting");
         if (isAd){
-            videoStream[0].currentTime = videoStream[0].duration - 0.1;
+            if (videoStream[0].currentTime <= videoStream[0].duration - 0.1){
+                videoStream[0].currentTime = videoStream[0].duration - 0.1;
+            }
+            if (videoStream[0].currentTime >= videoStream[0].duration - 0.1 && videoStream[0].paused){
+                videoStream[0].play();
+            }
             try {
                 let skipButton = document.getElementsByClassName("ytp-ad-skip-button")[0];
-                skipButton.click();
-                console.log("Clicked skip")
-            } catch {
-                try {
-                    let skipButtonModern = document.getElementsByClassName("ytp-ad-skip-button-modern")[0];
-                    skipButtonModern.click();
-                    console.log("Clicked skip")
-                } catch {
-                    console.log("No skip button");
+                if (skipButton){
+                    skipButton.click();
+                    console.log("Clicked skip");
                 }
+                let skipButtonModern = document.getElementsByClassName("ytp-ad-skip-button-modern")[0];
+                if (skipButtonModern){
+                    skipButtonModern.click();
+                    console.log("Clicked skip");
+                }
+            } catch {
+                console.log("No skip button");
             }
         }
     }, 150);
 }
+
 main();

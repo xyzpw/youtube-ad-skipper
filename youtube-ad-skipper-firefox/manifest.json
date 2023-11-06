@@ -1,15 +1,17 @@
 {
     "manifest_version": 2,
     "version": "1.0",
+    "author": "xyz",
     "name": "Youtube Ad Skipper",
     "icons": {
         "16": "/img/icon.png",
         "48": "/img/icon.png",
         "128": "/img/icon.png"
     },
-    "permissions": ["activeTab", "contextMenus"],
+    "permissions": ["activeTab", "contextMenus", "scripting", "https://www.youtube.com/*"],
     "background": {
-        "scripts": ["background.js", "remove-ads.js"]
+        "scripts": ["background.js", "remove-ads.js"],
+        "persistent": false
     },
     "content_scripts": [
         {

@@ -11,3 +11,13 @@ browser.contextMenus.onClicked.addListener((info, tab)=>{
     }
 });
 
+browser.tabs.onUpdated.addListener((id, change, tab) => {
+    if (change.status === "complete" && tab.url.includes("https://www.youtube.com")){
+        browser.tabs.executeScript({
+            file: "remove-ads.js",
+        });
+    }
+    // browser.tabs.executeScript({
+    //     file: "remove-ads.js",
+    // });
+})

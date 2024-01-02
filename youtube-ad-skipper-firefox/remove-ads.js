@@ -16,7 +16,6 @@ adElements = [".ytd-companion-slot-renderer",
 ".ytd-in-feed-ad-layout-renderer",
 ".ytd-ad-slot-renderer",
 ];
-
 unwantedElements = [
     ".ytd-promoted-video-renderer",
     ".ytd-brand-video-singleton-renderer",
@@ -24,7 +23,13 @@ unwantedElements = [
     ".ytd-popup-container",
     ".ytd-rich-section-renderer",
     ".ytd-promoted-sparkles-web-renderer",
-]
+];
+unwantedElementsSkipTagNames = [
+    "YP-YT-IRON-DROPDOWN",
+    "YTD-NOTIFICATION-TOPBAR-BUTTON-RENDERER",
+    "YT-BUTTON-SHAPE",
+    "IRON-MEDIA-QUERY",
+];
 
 function removeRemainingAds(){
     let n = 0;
@@ -54,8 +59,15 @@ function removeRemainingAds(){
             try{
                 document.querySelectorAll(ad).forEach((adSlot) => {
                     if (!adSlot.hidden){
-                        adSlot.hidden = true;
-                        ++n;
+                        if (ad == ".ytd-popup-container"){
+                            if (unwantedElementsSkipTagNames.indexOf(adSlot) != -1){
+                                adSlot.hidden = true;
+                                ++n;
+                            }
+                        } else {
+                            adSlot.hidden = true;
+                            ++n;
+                        }
                     }
                 });
             } catch (_ex){
@@ -63,12 +75,12 @@ function removeRemainingAds(){
             }
         }
         if (currentAd){
-            if (!currentAd.hidden){
+            if (!currentAd.hidden && ad != ".ytd-popup-container"){
                 currentAd.hidden = true;
                 ++n;
             }
         }
-    })
+    });
     let logMessage = `%cRemoved ${n} ads`;
     n >= 1 ? console.log(logMessage, "color: #28a745") : console.log(logMessage, "color: #ffc107");
 }

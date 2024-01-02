@@ -17,7 +17,4 @@ browser.tabs.onUpdated.addListener((id, change, tab) => {
             file: "remove-ads.js",
         });
     }
-    // browser.tabs.executeScript({
-    //     file: "remove-ads.js",
-    // });
 })

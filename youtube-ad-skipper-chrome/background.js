@@ -22,8 +22,4 @@ chrome.tabs.onUpdated.addListener((id, change, tab) => {
             files: ["remove-ads.js"],
         })
     }
-    // chrome.scripting.executeScript({
-    //     target: { tabId: tab.id },
-    //     files: ["remove-ads.js"],
-    // });
 });

@@ -16,7 +16,6 @@ adElements = [".ytd-companion-slot-renderer",
 ".ytd-primetime-promo-renderer",
 ".ytd-ad-slot-renderer",
 ];
-
 unwantedElements = [
     ".ytd-promoted-video-renderer",
     ".ytd-brand-video-singleton-renderer",
@@ -25,7 +24,12 @@ unwantedElements = [
     ".ytd-rich-section-renderer",
     ".ytd-promoted-sparkles-web-renderer",
 ];
-
+unwantedElementsSkipTagNames = [
+    "YP-YT-IRON-DROPDOWN",
+    "YTD-NOTIFICATION-TOPBAR-BUTTON-RENDERER",
+    "YT-BUTTON-SHAPE",
+    "IRON-MEDIA-QUERY",
+];
 function removeAdElements(){
     let n = 0;
     adElements.forEach((ad) => {
@@ -53,12 +57,17 @@ function removeAdElements(){
         if (document.querySelectorAll(ad).length > 1){
             document.querySelectorAll(ad).forEach((adSlot) => {
                 try{
-                    document.querySelectorAll(ad).forEach((adSlot) => {
-                        if (!adSlot.hidden){
+                    if (!adSlot.hidden){
+                        if (ad == ".ytd-popup-container"){
+                            if (unwantedElementsSkipTagNames.indexOf(adSlot) != -1){
+                                adSlot.hidden = true;
+                                ++n;
+                            }
+                        } else{
                             adSlot.hidden = true;
                             ++n;
                         }
-                    })
+                    }
                 } catch (_ex) {
                     console.log(_ex, _ex.lineNumber);
                 }
